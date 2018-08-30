@@ -102,20 +102,30 @@
   _.uniq = function(array, isSorted, iterator) {
     var uniqueArr = [];
 
-    if (iterator === undefined) {
+    if (iterator === undefined && !isSorted) {
       for (var i = 0; i < array.length; i++) {
        if (_.indexOf(uniqueArr, array[i]) === -1) {
         uniqueArr.push(array[i]);
        }
       }
-    } else if (iterator !== undefined) {
-      for (var i = 0; i < array.length; i++) {
-        if (_.indexOf(uniqueArr, array[i]) === -1 && iterator(array[i]) === true) {
+    } else if (iterator === undefined && isSorted) {
+      for (var i = 0; i < array.length; i++) { 
+        if (array[i] !== array[i - 1]) {
           uniqueArr.push(array[i]);
         }
       }
-    } 
-     
+    } else if (iterator) {
+      var uniqueIteratedArr = [];
+      
+      for (var i = 0; i < array.length; i++) {
+        var value = iterator(array[i]);
+
+        if (_.indexOf(uniqueIteratedArr, value) === -1) {
+          uniqueIteratedArr.push(value);
+          uniqueArr.push(array[i]);
+        }
+      }
+    }
     return uniqueArr;
   };
 
@@ -410,7 +420,7 @@
     var usedIdx = [];
     var randomArr = [];
 
-    while(randomArr.length < array.length) {
+    while(randomArr.length < maxInt) {
       var randomIdx = function getRandomInt(maxInt) {
         return Math.floor(Math.random() * Math.floor(maxInt));
       }(maxInt);
